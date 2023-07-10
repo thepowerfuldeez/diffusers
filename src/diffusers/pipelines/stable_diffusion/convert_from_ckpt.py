@@ -318,7 +318,7 @@ def create_unet_diffusers_config(original_config, image_size: int, controlnet=Fa
     }
 
     if controlnet:
-        config["conditioning_channels"] = unet_params.hint_channels
+        config["conditioning_channels"] = unet_params.conditioning_channels
     else:
         config["out_channels"] = unet_params.out_channels
         config["up_block_types"] = tuple(up_block_types)
@@ -438,7 +438,9 @@ def convert_ldm_unet_checkpoint(
     new_checkpoint["conv_in.weight"] = unet_state_dict["input_blocks.0.0.weight"]
     new_checkpoint["conv_in.bias"] = unet_state_dict["input_blocks.0.0.bias"]
 
-    if not controlnet:
+    if controlnet:
+        config['hint_channels'] = unet_params.hint_channels
+    else:
         new_checkpoint["conv_norm_out.weight"] = unet_state_dict["out.0.weight"]
         new_checkpoint["conv_norm_out.bias"] = unet_state_dict["out.0.bias"]
         new_checkpoint["conv_out.weight"] = unet_state_dict["out.2.weight"]
